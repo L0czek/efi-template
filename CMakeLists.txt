@@ -58,7 +58,7 @@ add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
 add_custom_command(OUTPUT ${DISK_IMAGE}
         COMMAND dd if=/dev/zero of=${DISK_IMAGE} bs=512 count=93750
         COMMAND ${PARTED} ${DISK_IMAGE} -s -a minimal mklabel gpt
-        COMMAND ${PARTED} ${DISK_IMAGE} -s -a minimal mkpart EFI FAT16 2048s 93716s
+        COMMAND ${PARTED} ${DISK_IMAGE} -s -a minimal mkpart EFI FAT16 2048s 93683s
         COMMAND ${PARTED} ${DISK_IMAGE} -s -a minimal toggle 1 boot
     )
 add_custom_target(FinalDisk ALL DEPENDS ${DISK_IMAGE})
@@ -78,7 +78,7 @@ foreach(file ${FILES_TO_COPY_ON_DISK})
     add_custom_command(TARGET CopyFilesOnDisk COMMAND mcopy -i ${TEMP_IMAGE} ${file} ::)
 endforeach()
 
-add_custom_target(OverwritePartition DEPENDS CopyFilesOnDisk
+add_custom_target(OverwritePartition DEPENDS CopyFilesOnDisk ${DISK_IMAGE}
         COMMAND dd if=${TEMP_IMAGE} of=${DISK_IMAGE} bs=512 count=91669 seek=2048 conv=notrunc
     )
 
